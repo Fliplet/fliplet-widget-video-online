@@ -1,7 +1,6 @@
-$('[data-video-online-id]').each(function () {
+Fliplet.Widget.instance('video-online', function (data) {
   var $el = $(this);
 
-  var data = Fliplet.Widget.getData($el.data('video-online-id'));
   $el.find('img')
     .on('click', function() {
       if (Fliplet.Navigator.isOnline()) {
