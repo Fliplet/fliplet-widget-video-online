@@ -6,12 +6,12 @@ var timer = null;
 var $refresh = $('[data-refresh]');
 
 // 1. Fired from Fliplet Studio when the external save button is clicked
-Fliplet.Widget.onSaveRequest(function () {
+Fliplet.Widget.onSaveRequest(function() {
   save(true);
 });
 
 function save(notifyComplete) {
-  Fliplet.Widget.save(data).then(function () {
+  Fliplet.Widget.save(data).then(function() {
     if (notifyComplete) {
       Fliplet.Widget.complete();
     } else {
@@ -55,7 +55,7 @@ if (data.url) {
   $refresh.removeClass('hidden');
 }
 
-$refresh.on('click', function (e) {
+$refresh.on('click', function(e) {
   e.preventDefault();
   $('#video_url').trigger('change');
 });
@@ -97,15 +97,15 @@ $('#video_url, #video_urls').on('input change', function() {
 
         return response;
       })
-      .then(function (response) {
+      .then(function(response) {
         // Validate thumbnail_url and convert to Base64 string
-        return toDataUrl(response.thumbnail_url).then(function (base64Img) {
+        return toDataUrl(response.thumbnail_url).then(function(base64Img) {
           response.thumbnail_base64 = base64Img;
           return response;
         });
       })
-      .then(function (response) {
-        if(response.type !== 'video' && response.type !=='link'){
+      .then(function(response) {
+        if (response.type !== 'video' && response.type !== 'link') {
           changeStates(false);
           return;
         }
@@ -114,7 +114,7 @@ $('#video_url, #video_urls').on('input change', function() {
 
         var bootstrapHtml = '<div class="embed-responsive embed-responsive-{{orientation}}">{{html}}</div>';
 
-        data.orientation = (response.width / response.height > 1.555 )? '16by9' : '4by3';
+        data.orientation = (response.width / response.height > 1.555 ) ? '16by9' : '4by3';
         data.embedly = response;
         data.type = response.type;
         data.url = url;
@@ -132,7 +132,7 @@ $('#video_url, #video_urls').on('input change', function() {
         save(false);
         Fliplet.Widget.toggleSaveButton(true);
       })
-      .catch(function () {
+      .catch(function() {
         data.html = '';
         changeStates(false);
         save(false);
@@ -167,10 +167,10 @@ function removeFinalStates() {
 
 // http://stackoverflow.com/a/20285053/1978835
 function toDataUrl(url) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function(resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'blob';
-    xhr.onload = function () {
+    xhr.onload = function() {
       if (xhr.status >= 400) {
         reject('Invalid thumbnail');
         return;
@@ -183,7 +183,7 @@ function toDataUrl(url) {
       };
       reader.readAsDataURL(xhr.response);
     };
-    xhr.onerror = function (error) {
+    xhr.onerror = function(error) {
       reject(error);
     };
     xhr.open('GET', Fliplet.Env.get('apiUrl') + 'v1/communicate/proxy/' + url);
