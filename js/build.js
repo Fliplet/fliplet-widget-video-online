@@ -1,8 +1,14 @@
 Fliplet.Widget.instance('video-online', function(data) {
   var $el = $(this);
 
+  $el.parents('[data-widget-package="com.fliplet.online-video"]').addClass('focus-outline');
+
   $el.find('img')
-    .on('click', function() {
+    .on('click keydown', function(event) {
+      if (event.type === 'keydown' && event.keyCode !== 13 && event.keyCode !== 32) {
+        return;
+      }
+
       if (Fliplet.Navigator.isOnline()) {
         Fliplet.Analytics.trackEvent({
           category: 'video',
