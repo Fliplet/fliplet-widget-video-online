@@ -44,7 +44,7 @@
     pointer-events: none;
 }
 .fl-video-thumb-holder img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
     cursor: pointer;
 }
