@@ -4,6 +4,7 @@ var TIMEOUT_BUFFER = 1000; // Timeout buffer in ms
 var timer = null;
 
 var $refresh = $('[data-refresh]');
+var $showExample = $('#try-stream-single');
 
 // 1. Fired from Fliplet Studio when the external save button is clicked
 Fliplet.Widget.onSaveRequest(function() {
@@ -61,10 +62,6 @@ function oembed(options) {
     });
 }
 
-if (data.url) {
-  $refresh.removeClass('hidden');
-}
-
 $refresh.on('click', function(e) {
   e.preventDefault();
   $('#video_url').trigger('change');
@@ -78,12 +75,16 @@ $('#video_url, #video_urls').on('input change', function() {
   $('.video-states .loading').addClass('show');
   $refresh.addClass('hidden');
 
+
   if ($(this).val().length === 0) {
     $('.video-states .initial').removeClass('hidden');
     $('.video-states .loading').removeClass('show');
+    $showExample.removeClass('invisible');
     save();
     return;
   }
+
+  $showExample.addClass('invisible');
 
   Fliplet.Widget.toggleSaveButton(false);
   clearTimeout(timer);
