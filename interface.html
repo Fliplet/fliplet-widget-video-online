@@ -8,7 +8,7 @@
     </p>
   </header>
   <div class="settings-holder">
-    <div class="form-group clearfix single-field">
+    <div class="form-group clearfix">
       <div class="col-sm-4 control-label">
         <label for="video_url">Paste your video URL</label>
         <p class="help-block">See <a href="http://embed.ly/providers" target="_blank">embedly</a> for a list of supported video providers.</p>
@@ -24,10 +24,10 @@
           </div>
         </div>
         <div class="helper-holder clearfix">
-          <div class="alert alert-danger error">The link doesn’t contain a video thumbnail or it is not supported. Please try again later if the video is recently updated.</div>
-          <div class="alert alert-warning warning">The link doesn't support inline video playback. Your video will play in the in-app browser (for native apps) or a new tab (for web apps).</div>
-          <a id="try-stream-single" href="#">Show me an example</a>
-          <a href="#" class="pull-right hidden" data-refresh>Refresh thumbnail</a>
+          <a id="try-stream-single" href="#" {{#if url}}class="invisible"{{/if}}>Show me an example</a>
+          <a href="#" class="pull-right {{#unless url}}hidden{{/unless}}" data-refresh>Refresh thumbnail</a>
+          <div class="alert alert-danger error"></div>
+          <div class="alert alert-warning warning {{#compare type '===' 'link'}}show{{/compare}}">The link doesn't support inline video playback. Your video will play in the in-app browser (for native apps) or a new tab (for web apps).</div>
         </div>
       </div>
     </div>

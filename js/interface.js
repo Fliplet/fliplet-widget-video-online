@@ -4,6 +4,7 @@ var TIMEOUT_BUFFER = 1000; // Timeout buffer in ms
 var timer = null;
 
 var $refresh = $('[data-refresh]');
+var $showExample = $('#try-stream-single');
 
 // 1. Fired from Fliplet Studio when the external save button is clicked
 Fliplet.Widget.onSaveRequest(function() {
@@ -37,22 +38,28 @@ function oembed(options) {
 
   return $.getJSON('https://api.embedly.com/1/oembed?' + $.param(params))
     .then(function(response) {
-      if (!response.width || !response.height) {
-        // A size and thumbnail are required to render the output
-        return Promise.reject('This URL is not supported for online embedding. See http://embed.ly/providers to learn more.');
-      }
+      var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
-      if (!response.thumbnail_url && options.validateThumbnail) {
+      if (response.thumbnail_url) {
+        if (!response.width) {
+          response.width = response.thumbnail_width;
+        }
+
+        if (!response.height) {
+          response.height = response.thumbnail_height;
+        }
+      } else if (options.validateThumbnail) {
         // A size and thumbnail are required to render the output
         return Promise.reject('Video thumbnail not found. Please try again later if the video is recently published.');
       }
 
+      // A size and thumbnail are required to render the output
+      if (!response.width || !response.height || notSupported) {
+        return Promise.reject('This URL is not supported for online embedding. See <a href="https://embed.ly/providers">https://embed.ly/providers</a> to learn more.');
+      }
+
       return response;
     });
-}
-
-if (data.url) {
-  $refresh.removeClass('hidden');
 }
 
 $refresh.on('click', function(e) {
@@ -68,12 +75,16 @@ $('#video_url, #video_urls').on('input change', function() {
   $('.video-states .loading').addClass('show');
   $refresh.addClass('hidden');
 
+
   if ($(this).val().length === 0) {
     $('.video-states .initial').removeClass('hidden');
     $('.video-states .loading').removeClass('show');
+    $showExample.removeClass('invisible');
     save();
     return;
   }
+
+  $showExample.addClass('invisible');
 
   Fliplet.Widget.toggleSaveButton(false);
   clearTimeout(timer);
@@ -105,11 +116,6 @@ $('#video_url, #video_urls').on('input change', function() {
         });
       })
       .then(function(response) {
-        if (response.type !== 'video' && response.type !== 'link') {
-          changeStates(false);
-          return;
-        }
-
         $refresh.removeClass('hidden');
 
         var bootstrapHtml = '<div class="embed-responsive embed-responsive-{{orientation}}">{{html}}</div>';
@@ -132,9 +138,9 @@ $('#video_url, #video_urls').on('input change', function() {
         save(false);
         Fliplet.Widget.toggleSaveButton(true);
       })
-      .catch(function() {
+      .catch(function(error) {
         data.html = '';
-        changeStates(false);
+        changeStates(false, error);
         save(false);
         Fliplet.Widget.toggleSaveButton(true);
       });
@@ -145,24 +151,24 @@ $('#try-stream-single, #try-stream-multiple').on('click', function() {
   $('#video_url').val('https://vimeo.com/channels/staffpicks/137643804').trigger('change');
 });
 
-function changeStates(success) {
+function changeStates(success, error) {
+  $('.video-states .loading').removeClass('show');
+
   if (success) {
-    $('.video-states .loading').removeClass('show');
     $('.video-states .success').addClass('show');
   } else {
-    $('.video-states .loading').removeClass('show');
     $('.video-states .fail').addClass('show');
-    $('.helper-holder .error').addClass('show');
+    $('.helper-holder .error').html(Fliplet.parseError(error, 'Unknown error. Please try again later.')).addClass('show');
   }
 }
 
 function removeFinalStates() {
-  if ($('.video-states .fail').hasClass('show')) {
-    $('.video-states .fail').removeClass('show');
-    $('.helper-holder .error').removeClass('show');
-  } else if ($('.video-states .success').hasClass('show')) {
-    $('.video-states .success').removeClass('show');
-  }
+  $([
+    '.helper-holder .warning',
+    '.helper-holder .error',
+    '.video-states .success',
+    '.video-states .fail'
+  ].join(',')).removeClass('show');
 }
 
 // http://stackoverflow.com/a/20285053/1978835
