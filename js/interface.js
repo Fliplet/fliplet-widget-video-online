@@ -158,7 +158,7 @@ function changeStates(success, error) {
     $('.video-states .success').addClass('show');
   } else {
     $('.video-states .fail').addClass('show');
-    $('.helper-holder .error').html(Fliplet.parseError(error, 'Unknown error. Please try agian later.')).addClass('show');
+    $('.helper-holder .error').html(Fliplet.parseError(error, 'Unknown error. Please try again later.')).addClass('show');
   }
 }
 
