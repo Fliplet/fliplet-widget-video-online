@@ -37,14 +37,16 @@ function oembed(options) {
 
   return $.getJSON('https://api.embedly.com/1/oembed?' + $.param(params))
     .then(function(response) {
-      if (!response.width || !response.height) {
-        // A size and thumbnail are required to render the output
-        return Promise.reject('This URL is not supported for online embedding. See http://embed.ly/providers to learn more.');
-      }
+      var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
       if (!response.thumbnail_url && options.validateThumbnail) {
         // A size and thumbnail are required to render the output
         return Promise.reject('Video thumbnail not found. Please try again later if the video is recently published.');
+      }
+
+      // A size and thumbnail are required to render the output
+      if (!response.width || !response.height || notSupported) {
+        return Promise.reject('This URL is not supported for online embedding. See <a href="https://embed.ly/providers">https://embed.ly/providers</a> to learn more.');
       }
 
       return response;
@@ -105,11 +107,6 @@ $('#video_url, #video_urls').on('input change', function() {
         });
       })
       .then(function(response) {
-        if (response.type !== 'video' && response.type !== 'link') {
-          changeStates(false);
-          return;
-        }
-
         $refresh.removeClass('hidden');
 
         var bootstrapHtml = '<div class="embed-responsive embed-responsive-{{orientation}}">{{html}}</div>';
@@ -132,9 +129,9 @@ $('#video_url, #video_urls').on('input change', function() {
         save(false);
         Fliplet.Widget.toggleSaveButton(true);
       })
-      .catch(function() {
+      .catch(function(error) {
         data.html = '';
-        changeStates(false);
+        changeStates(false, error);
         save(false);
         Fliplet.Widget.toggleSaveButton(true);
       });
@@ -145,14 +142,13 @@ $('#try-stream-single, #try-stream-multiple').on('click', function() {
   $('#video_url').val('https://vimeo.com/channels/staffpicks/137643804').trigger('change');
 });
 
-function changeStates(success) {
+function changeStates(success, error) {
   if (success) {
     $('.video-states .loading').removeClass('show');
     $('.video-states .success').addClass('show');
   } else {
-    $('.video-states .loading').removeClass('show');
     $('.video-states .fail').addClass('show');
-    $('.helper-holder .error').addClass('show');
+    $('.helper-holder .error').html(Fliplet.parseError(error, 'Unknown error. Please try agian later.')).addClass('show');
   }
 }
 
