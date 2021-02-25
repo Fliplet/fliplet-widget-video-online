@@ -152,8 +152,9 @@ $('#try-stream-single, #try-stream-multiple').on('click', function() {
 });
 
 function changeStates(success, error) {
+  $('.video-states .loading').removeClass('show');
+
   if (success) {
-    $('.video-states .loading').removeClass('show');
     $('.video-states .success').addClass('show');
   } else {
     $('.video-states .fail').addClass('show');
@@ -162,12 +163,12 @@ function changeStates(success, error) {
 }
 
 function removeFinalStates() {
-  if ($('.video-states .fail').hasClass('show')) {
-    $('.video-states .fail').removeClass('show');
-    $('.helper-holder .error').removeClass('show');
-  } else if ($('.video-states .success').hasClass('show')) {
-    $('.video-states .success').removeClass('show');
-  }
+  $([
+    '.helper-holder .warning',
+    '.helper-holder .error',
+    '.video-states .success',
+    '.video-states .fail'
+  ].join(',')).removeClass('show');
 }
 
 // http://stackoverflow.com/a/20285053/1978835
