@@ -39,7 +39,15 @@ function oembed(options) {
     .then(function(response) {
       var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
-      if (!response.thumbnail_url && options.validateThumbnail) {
+      if (response.thumbnail_url) {
+        if (!response.width) {
+          response.width = response.thumbnail_width;
+        }
+
+        if (!response.height) {
+          response.height = response.thumbnail_height;
+        }
+      } else if (options.validateThumbnail) {
         // A size and thumbnail are required to render the output
         return Promise.reject('Video thumbnail not found. Please try again later if the video is recently published.');
       }
