@@ -1,6 +1,8 @@
 var widgetId = Fliplet.Widget.getDefaultId();
 var data = Fliplet.Widget.getData(widgetId) || {};
 var TIMEOUT_BUFFER = 1000; // Timeout buffer in ms
+var MAX_THUMBNAIL_WIDTH = 800;
+var THUMBNAIL_QUALITY = 0.7;
 var timer = null;
 
 var $refresh = $('[data-refresh]');
@@ -110,10 +112,25 @@ $('#video_url, #video_urls').on('input change', function() {
       })
       .then(function(response) {
         // Validate thumbnail_url and convert to Base64 string
-        return toDataUrl(response.thumbnail_url).then(function(base64Img) {
-          response.thumbnail_base64 = base64Img;
-          return response;
-        });
+        return toDataUrl(response.thumbnail_url)
+          .then(function(base64Img) {
+            if (response.width > MAX_THUMBNAIL_WIDTH) {
+              var width = MAX_THUMBNAIL_WIDTH;
+              var height = response.height/response.width * width;
+
+              response.width = width;
+              response.height = height;
+            }
+
+            return resizeDataURL(base64Img, {
+              width: response.width,
+              height: response.height
+            });
+          })
+          .then(function(base64ImgResized) {
+            response.thumbnail_base64 = base64ImgResized;
+            return response;
+          });
       })
       .then(function(response) {
         $refresh.removeClass('hidden');
@@ -195,5 +212,39 @@ function toDataUrl(url) {
     xhr.open('GET', Fliplet.Env.get('apiUrl') + 'v1/communicate/proxy/' + url);
     xhr.setRequestHeader('auth-token', Fliplet.User.getAuthToken());
     xhr.send();
+  });
+}
+
+function resizeDataURL(data, options) {
+  options = options || {};
+
+  return new Promise(function(resolve, reject) {
+    // We create an image to receive the Data URI
+    var img = document.createElement('img');
+
+    // When the event "onload" is triggered we can resize the image.
+    img.onload = function() {
+      // We create a canvas and get its context.
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+
+      // We set the dimensions at the wanted size.
+      canvas.width = options.width;
+      canvas.height = options.height;
+
+      // We resize the image with the canvas method drawImage();
+      ctx.drawImage(this, 0, 0, options.width, options.height);
+
+      var dataURI = canvas.toDataURL('image/jpeg', THUMBNAIL_QUALITY);
+
+      resolve(dataURI);
+    };
+
+    img.onerror = function(error) {
+      reject(error);
+    }
+
+    // We put the Data URI in the image's src attribute
+    img.src = data;
   });
 }
