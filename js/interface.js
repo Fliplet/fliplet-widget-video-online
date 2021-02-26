@@ -37,6 +37,7 @@ function oembed(options) {
     key: '81633801114e4d9f88027be15efb8169',
     autoplay: true
   };
+  var embedExploreUrl = 'https://embed.ly/docs/explore/oembed' + $.param({ url: options.url });
 
   return $.getJSON('https://api.embedly.com/1/oembed?' + $.param(params))
     .then(function(response) {
@@ -52,12 +53,12 @@ function oembed(options) {
         }
       } else if (options.validateThumbnail) {
         // A size and thumbnail are required to render the output
-        return Promise.reject('Video thumbnail not found. Please try again later if the video is recently published.');
+        return Promise.reject('Video thumbnail not found. See <a href="' + embedExploreUrl+ '">embed.ly/docs/explore/oembed</a> to make sure it\'s a video with a valid thumbnail. Please try again later if the video is recently published.');
       }
 
       // A size and thumbnail are required to render the output
       if (!response.width || !response.height || notSupported) {
-        return Promise.reject('This URL is not supported for online embedding. See <a href="https://embed.ly/providers">https://embed.ly/providers</a> to learn more.');
+        return Promise.reject('This URL is not supported for online embedding or does not have a thumbnail for embedding. See <a href="' + embedExploreUrl+ '">embed.ly/docs/explore/oembed</a> to make sure it\'s a video link with a valid thumbnail.');
       }
 
       return response;
