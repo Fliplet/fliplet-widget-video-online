@@ -37,7 +37,7 @@ function oembed(options) {
     key: '81633801114e4d9f88027be15efb8169',
     autoplay: true
   };
-  var embedExploreUrl = 'https://embed.ly/docs/explore/oembed' + $.param({ url: options.url });
+  var embedExploreUrl = 'https://embed.ly/docs/explore/oembed?' + $.param({ url: options.url });
 
   return $.getJSON('https://api.embedly.com/1/oembed?' + $.param(params))
     .then(function(response) {
