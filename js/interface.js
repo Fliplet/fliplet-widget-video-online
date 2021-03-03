@@ -67,7 +67,7 @@ function oembed(options) {
 
 $refresh.on('click', function(e) {
   e.preventDefault();
-  $('#video_url').trigger('change');
+  $('#video_url').trigger('input');
 });
 
 $('#video_url, #video_urls').on('input', function() {
