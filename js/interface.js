@@ -70,7 +70,7 @@ $refresh.on('click', function(e) {
   $('#video_url').trigger('change');
 });
 
-$('#video_url, #video_urls').on('input change', function() {
+$('#video_url, #video_urls').on('input', function() {
   var url = this.value;
 
   removeFinalStates();
@@ -166,7 +166,7 @@ $('#video_url, #video_urls').on('input change', function() {
 });
 
 $('#try-stream-single, #try-stream-multiple').on('click', function() {
-  $('#video_url').val('https://vimeo.com/channels/staffpicks/137643804').trigger('change');
+  $('#video_url').val('https://vimeo.com/channels/staffpicks/137643804').trigger('input');
 });
 
 function changeStates(success, error) {
