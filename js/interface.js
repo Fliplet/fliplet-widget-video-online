@@ -4,6 +4,7 @@ var TIMEOUT_BUFFER = 1000; // Timeout buffer in ms
 var MAX_THUMBNAIL_WIDTH = 800;
 var THUMBNAIL_QUALITY = 0.7;
 var timer = null;
+var MAX_RESPONSE_PORTRAIT_WIDTH = 3200;
 
 var $refresh = $('[data-refresh]');
 var $showExample = $('#try-stream-single');
@@ -115,12 +116,18 @@ $('#video_url, #video_urls').on('input', function() {
         // Validate thumbnail_url and convert to Base64 string
         return toDataUrl(response.thumbnail_url)
           .then(function(base64Img) {
+            var width = MAX_THUMBNAIL_WIDTH;
+
             if (response.width > MAX_THUMBNAIL_WIDTH) {
-              var width = MAX_THUMBNAIL_WIDTH;
-              var height = response.height/response.width * width;
+              var height = (response.height / response.width) * width;
 
               response.width = width;
               response.height = height;
+            } else {
+              var calculatedHeight = (response.height / MAX_RESPONSE_PORTRAIT_WIDTH) * width;
+
+              response.width = width;
+              response.height = calculatedHeight;
             }
 
             return resizeDataURL(base64Img, {
