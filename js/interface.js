@@ -4,7 +4,6 @@ var TIMEOUT_BUFFER = 1000; // Timeout buffer in ms
 var MAX_THUMBNAIL_WIDTH = 800;
 var THUMBNAIL_QUALITY = 0.7;
 var timer = null;
-var MAX_RESPONSE_PORTRAIT_WIDTH = 3200;
 
 var $refresh = $('[data-refresh]');
 var $showExample = $('#try-stream-single');
@@ -45,11 +44,11 @@ function oembed(options) {
       var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
       if (response.thumbnail_url) {
-        if (!response.width) {
+        if (!response.width || response.width) {
           response.width = response.thumbnail_width;
         }
 
-        if (!response.height) {
+        if (!response.height || response.height) {
           response.height = response.thumbnail_height;
         }
       } else if (options.validateThumbnail) {
@@ -123,11 +122,6 @@ $('#video_url, #video_urls').on('input', function() {
 
               response.width = width;
               response.height = height;
-            } else {
-              var calculatedHeight = (response.height / MAX_RESPONSE_PORTRAIT_WIDTH) * width;
-
-              response.width = width;
-              response.height = calculatedHeight;
             }
 
             return resizeDataURL(base64Img, {
