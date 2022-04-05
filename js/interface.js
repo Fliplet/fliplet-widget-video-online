@@ -115,9 +115,9 @@ $('#video_url, #video_urls').on('input', function() {
         // Validate thumbnail_url and convert to Base64 string
         return toDataUrl(response.thumbnail_url)
           .then(function(base64Img) {
-            var width = MAX_THUMBNAIL_WIDTH;
 
             if (response.width > MAX_THUMBNAIL_WIDTH) {
+              var width = MAX_THUMBNAIL_WIDTH;
               var height = (response.height / response.width) * width;
 
               response.width = width;
