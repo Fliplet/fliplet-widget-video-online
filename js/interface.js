@@ -44,14 +44,13 @@ function oembed(options) {
       var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
       if (response.thumbnail_url) {
-        if (!response.width || response.thumbnail_width) {
+        if (response.thumbnail_width) {
           response.width = response.thumbnail_width;
         }
 
-        if (!response.height || response.thumbnail_height) {
+        if (response.thumbnail_height) {
           response.height = response.thumbnail_height;
         }
-
       } else if (options.validateThumbnail) {
         // A size and thumbnail are required to render the output
         return Promise.reject('Video thumbnail not found. See <a href="' + embedExploreUrl+ '">embed.ly/docs/explore/oembed</a> to make sure it\'s a video with a valid thumbnail. Please try again later if the video is recently published.');
@@ -116,7 +115,6 @@ $('#video_url, #video_urls').on('input', function() {
         // Validate thumbnail_url and convert to Base64 string
         return toDataUrl(response.thumbnail_url)
           .then(function(base64Img) {
-
             if (response.width > MAX_THUMBNAIL_WIDTH) {
               var width = MAX_THUMBNAIL_WIDTH;
               var height = response.height/response.width * width;
