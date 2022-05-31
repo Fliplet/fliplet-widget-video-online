@@ -44,11 +44,11 @@ function oembed(options) {
       var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
       if (response.thumbnail_url) {
-        if (!response.width) {
+        if (response.thumbnail_width) {
           response.width = response.thumbnail_width;
         }
 
-        if (!response.height) {
+        if (response.thumbnail_height) {
           response.height = response.thumbnail_height;
         }
       } else if (options.validateThumbnail) {
