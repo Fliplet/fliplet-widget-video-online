@@ -44,11 +44,11 @@ function oembed(options) {
       var notSupported = ['video', 'link'].indexOf(response.type) === -1;
 
       if (response.thumbnail_url) {
-        if (!response.width) {
+        if (response.thumbnail_width) {
           response.width = response.thumbnail_width;
         }
 
-        if (!response.height) {
+        if (response.thumbnail_height) {
           response.height = response.thumbnail_height;
         }
       } else if (options.validateThumbnail) {
@@ -138,7 +138,20 @@ $('#video_url, #video_urls').on('input', function() {
 
         var bootstrapHtml = '<div class="embed-responsive embed-responsive-{{orientation}}">{{html}}</div>';
 
-        data.orientation = (response.width / response.height > 1.555 ) ? '16by9' : '4by3';
+        var calculatedWidthHeight = response.width / response.height;
+
+        if (calculatedWidthHeight >= 1.556) {
+          data.orientation = '16by9';
+        } else if (calculatedWidthHeight >= 1.167 && calculatedWidthHeight < 1.556) {
+          data.orientation = '4by3';
+        } else if (calculatedWidthHeight >= 0.875 && calculatedWidthHeight < 1.167) {
+          data.orientation = '1by1';
+        } else if (calculatedWidthHeight >= 0.656 && calculatedWidthHeight < 0.875) {
+          data.orientation = '3by4';
+        } else {
+          data.orientation = '6by19';
+        }
+
         data.embedly = response;
         data.type = response.type;
         data.url = url;
