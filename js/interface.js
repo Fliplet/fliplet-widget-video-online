@@ -149,7 +149,7 @@ $('#video_url, #video_urls').on('input', function() {
         } else if (calculatedWidthHeight >= 0.656 && calculatedWidthHeight < 0.875) {
           data.orientation = '3by4';
         } else {
-          data.orientation = '6by19';
+          data.orientation = '9by16';
         }
 
         data.embedly = response;
