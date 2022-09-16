@@ -137,7 +137,6 @@ $('#video_url, #video_urls').on('input', function() {
         $refresh.removeClass('hidden');
 
         var bootstrapHtml = '<div class="embed-responsive embed-responsive-{{orientation}}">{{html}}</div>';
-
         var calculatedWidthHeight = response.width / response.height;
 
         if (calculatedWidthHeight >= 1.556) {
@@ -148,8 +147,10 @@ $('#video_url, #video_urls').on('input', function() {
           data.orientation = '1by1';
         } else if (calculatedWidthHeight >= 0.656 && calculatedWidthHeight < 0.875) {
           data.orientation = '3by4';
-        } else {
+        } else if (calculatedWidthHeight >= 0.315 && calculatedWidthHeight < 0.656) {
           data.orientation = '9by16';
+        } else {
+          data.orientation = '6by19';
         }
 
         data.embedly = response;
